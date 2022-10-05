@@ -1,0 +1,7 @@
+Field of flowers	Mohammed Younus Kawa Mohammed
+Components	Field (server), sun, wind.
+Description	Flower field gets seeded and starts to grow. Each sun periodically generates a random value that shows if it shines or not. 
+If more than half of suns shine, field periodically grows a little, otherwise it recedes a little. When growth level goes above chosen, 
+the field flowers. Flowering field can neither grow nor recede. Each wind periodically generates a random value that shows if it blows or not. 
+If more than half of winds blow and field is flowering it periodically gets pollinated a little. When pollination level goes above chosen, field is mowed for 5 sec. 
+and resets to initial conditions afterwards. While field is being mowed it can neither grow, nor recede nor get pollinated.
