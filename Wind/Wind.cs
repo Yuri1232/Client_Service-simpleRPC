@@ -1,4 +1,5 @@
 ﻿namespace Wind;
+using System;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -91,21 +92,17 @@ class Winds
 		{
 			var random = new Random();
 
+				var index_Wind=service.ResgisterWind();
+			
+
 			while (true)
 			{
                 //wind generates random values that show if it blows(true) or not(false) 
                 bool isBlowing = random.Next(0, 2) > 0;
 
                 log.Info("Wind value: " + isBlowing);
-                if (isBlowing)
-                {
-                    service.WindAdd();
-					service.CountWind();
-
-                }else
-				{
-					service.CountWind();
-				}
+				service.SetWind(index_Wind,isBlowing);
+              
 
                 // giving the console a bit of time so it wont overlap over other console Write Lines
                 Thread.Sleep(2000);

@@ -82,24 +82,24 @@ namespace client_sun
         private void SunMethod(IService S){
 
             var random = new Random();
+          
+          
+            var index_Sun=S.ResgisterSun();
 
             while(true){
+
         
                 bool shine = random.Next(0,2) > 0;
                 log.Info("Sun state: " + shine);
-                if(shine){
-                    S.SunCount();
-                    S.SunAdd();
                 
-                    
                    
-                }
-                else{
-                     S.SunCount();
-                }
+                S.SetSun(index_Sun,shine);
+                    
+                 
+                 
                
                 
-                 Thread.Sleep(2000);
+              Thread.Sleep(2000);
 
             }
 

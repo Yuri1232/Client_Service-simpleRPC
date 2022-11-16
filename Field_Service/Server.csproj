@@ -5,12 +5,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="NLog" Version="4.7.11"/>
-		<PackageReference Include="SimpleRpc" Version="1.0.0-beta1"/>
-		<PackageReference Include="SimpleRpc.Serialization.Hyperion" Version="1.0.0-beta1"/>
+		<PackageReference Include="NLog" Version="4.7.11" />
+		<PackageReference Include="SimpleRpc" Version="1.0.0-beta1" />
+		<PackageReference Include="SimpleRpc.Serialization.Hyperion" Version="1.0.0-beta1" />
+		<PackageReference Include="timer" Version="2.1.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Contract\Contract.csproj"/>
+		<ProjectReference Include="..\Contract\Contract.csproj" />
 	</ItemGroup>
 </Project>

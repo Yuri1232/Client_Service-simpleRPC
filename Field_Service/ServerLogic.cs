@@ -1,24 +1,23 @@
 using System;
 using System.Collections.Generic;
 using NLog;
+using System.Threading;
 
 using Contract;
 
 namespace Server
 {
-	/// <summary>
-	/// Networking independant service logic.
-	/// </summary>
-	public class ServiceLogic : IService
-	{
-		/// <summary>
-		/// Logger for this class.
-		/// </summary>
-		Logger log = LogManager.GetCurrentClassLogger();
+    /// <summary>
+    /// Networking independant service logic.
+    /// </summary>
+    public class ServiceLogic : IService
+    {
+        /// <summary>
+        /// Logger for this class.
+        /// </summary>
+        Logger log = LogManager.GetCurrentClassLogger();
 
         //amount variables for current flower field statistics logging
-        int growthAmount;
-        int pollinateAmount;
 
         //variables for limits
         const int growthLimit = 10;
@@ -30,155 +29,225 @@ namespace Server
         bool hasBlossomed = false;
         bool hasMatured = false;
         bool isPlanting = false;
-      List <bool> myList = new List<bool>(){false};
-      List <bool> myListWind = new List<bool>(){false};
-      int count =0;
-      int countWind = 0;
+
+        List<bool> Suns = new List<bool>();
+        List<bool> Winds = new List<bool>();
 
 
-      
+        const int maxShine = 6;
 
-        /// <summary>
-        /// Add sun shining value to sun shining amount
-        /// </summary>
-		public void SunAdd()
-		{
+
+        const int maxWind = 6;
+        int sumShine = 0;
+        int amountBlows = 0;
+
+
+        public int ResgisterSun()
+        {
+            if (!isPlanting && !hasBlossomed)
+            {
+
+
+                Suns.Add(false);
+                return Suns.Count() - 1;
+            }
+            else
+            {
+                return 0;
+            }
+
+
+        }
+
+        public int ResgisterWind()
+        {
+            if (!isPlanting && hasBlossomed && !hasMatured)
+            {
+
+                Winds.Add(false);
+                return Winds.Count() - 1;
+            }
+            else
+            {
+                return 0;
+            }
+
+
+        }
+
+        public int Usable()
+        {
+            if (!isPlanting && !hasBlossomed)
+            {
+                //if the field blossoms, it is not growing
+
+
+                return Suns.Select(it =>
+                          {
+                              if (it == true)
+                              {
+                                  return 1;
+                              }
+                              return 0;
+                          }).Sum();
+
+            }
+            else if (!isPlanting && hasBlossomed && !hasMatured)
+            {
+                return Winds.Select(it =>
+                    {
+                        if (it == true)
+                        {
+                            return 1;
+                        }
+                        return 0;
+                    }).Sum();
+
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public int CheckSum()
+        {
+            if (!isPlanting && !hasBlossomed)
+            {
+                var numSunShine = Usable();
+                var random = new Random();
+                int rndGrowsAlittle = random.Next(0, 2);
+                int rndRedcesAlittle = random.Next(-1, 1);
+
+                if (numSunShine > Suns.Count() / 2)
+                {
+                    return rndGrowsAlittle;
+
+
+                }
+                else
+                {
+
+                    return rndRedcesAlittle;
+
+                }
+            }
+            else if (!isPlanting && hasBlossomed && !hasMatured)
+            {
+                var numWindBlow = Usable();
+                var random = new Random();
+                int rndBlow = random.Next(0, 2);
+                //int unrndBlow = random.Next(-1,1);
+
+                if (numWindBlow > Winds.Count() / 2)
+                {
+
+                    return rndBlow;
+
+                }
+                else
+                {
+
+                    return 0;
+
+                }
+
+            }
+            else
+            {
+
+                return 0;
+
+            }
+        }
+
+
+        public void SetSun(int index, bool value)
+        {
             if (!isPlanting)
             {
                 if (!hasBlossomed) //if the field blossoms, it is not growing
                 {
-                        myList.Add(true);
-                       
-                        if(count < 5){
-                          var rand= new Random();
-                          int grow = rand.Next(1,2);
-                          growthAmount += grow;
- 
-                         log.Info("Growing state = +" + grow + "  (Current growth amount = " + growthAmount + ")");
+
+                    Suns[index] = value;
+                    var numSunShine = Usable();
+                    int progress = CheckSum();
+                    sumShine = sumShine += progress;
+
+                    if (sumShine < 0)
+                    {
+
+                        sumShine = 0;
+
+                        log.Info("Growing-state =" + progress + "  #Current growth amount = " + sumShine + "  Shining-state  " + numSunShine + " Total-signal " + Suns.Count());
+
                     }
-                }
-            }
-		}
+                    else
+                    {
 
-        // <summary>
-        // Remove sun shining value from sun shining amount
-        // </summary>
-        public void SunCount()
-        {
-       
-            if (!isPlanting)
-            {
-                if (!hasBlossomed) //if the field blossoms, it is not receding
-                {
-                       bool last = myList[myList.Count - 1];
-                        if(last == true){
-                            count ++;
-                        }  
-                      if(count > 5){
-                         log.Info("Growing state is more than half");
-                         var rand= new Random();
-                         int Min_grow = rand.Next(0,2);
-                
-                        if((growthAmount + Min_grow) > growthLimit){
-                             growthAmount = growthLimit;
 
-                        }else{
-                            growthAmount = growthAmount + Min_grow;
+                        log.Info("Growing-state = " + progress + "  #Current growth amount = " + sumShine + "  Shining-state  " + numSunShine + " Total-signal " + Suns.Count());
+                    }
 
-                        }
-                        
-                    // }
-                    log.Info("Growing state = +" +  Min_grow  + "  (Current growth amount = " + growthAmount + ")");
-                      if (growthAmount >= growthLimit) //when growth amount goes above chosen limit, a field blossoms
+
+                    if (sumShine >= maxShine)
                     {
                         hasBlossomed = true;
-                        log.Info(" The growth limit " + growthLimit + " was reached");
+
+                        log.Info("The Grow-limit: " + maxWind + " was reached ");
+
                     }
-                    }
-                     myList.Add(false);
+
+
+
                 }
             }
         }
 
-       // <summary>
-        // Add wind blowing value to wind blowing amount
-        // </summary>
-        public void WindAdd()
+
+
+        public void SetWind(int index_Wind, bool value_Wind)
         {
             if (!isPlanting)
             {
-                if (!hasMatured)
+                if (hasBlossomed) //if the field blossoms, it is not growing
                 {
-                    if (hasBlossomed)
+                    if (!hasMatured)
                     {
-                        myListWind.Add(true);
-                        var random = new Random();
-                        int pollinate = random.Next(1, 2);
 
-                        if(countWind < 5){
-                    
-                            pollinateAmount += pollinate;
-                    
-                        log.Info("Pollinate state= " + pollinate + "  Current pollinate amount = " + pollinateAmount);
+                        Winds[index_Wind] = value_Wind;
+                        var numBlow = Usable();
+                        //  var random = new Random();
+                        int progress = CheckSum();
 
-                        if (pollinateAmount >= pollinateLimit) //when pollinate amount goes above chosen limit, a field matures
+                        amountBlows = amountBlows += progress;
+                        // sumBlow=  blow+=numBlow;
+
+                        if (amountBlows < 0)
+                        {
+                            amountBlows = 0;
+                            log.Info("Blowing-state = " + progress + "  #Current growth amount = " + amountBlows + " Blowed-state " + numBlow + " Total-signal " + Winds.Count());
+                        }
+                        else
+                        {
+
+
+                            log.Info("Blowing-state = " + progress + "  #Current growth amount = " + amountBlows + " Blowed-state " + numBlow + " Total-signal " + Winds.Count());
+                        }
+
+                        if (amountBlows >= maxWind)
                         {
                             hasMatured = true;
-                            log.Info("The pollinate limit: +" + pollinateLimit + " was reached ");
 
-                        }
+                            log.Info("The pollinate-limit: " + maxWind + " was reached ");
+
                         }
                     }
                 }
             }
         }
 
-            public void CountWind(){
 
-                if (!isPlanting){
-                    
-                    if(!hasMatured){
-
-                        if(hasBlossomed){
-                        var random = new Random();
-                        int polinate = random.Next(0,2);
-                            
-                        bool last = myListWind[myListWind.Count - 1];
-
-                        if(last == true)
-                        {
-                            countWind++;
-                        }
-                            if(countWind > 5)
-                            {
-                                 log.Info("Pollinate state is more than half");
-                                 pollinateAmount += polinate;
-
-                            
-                              log.Info("Pollinate state = +" + polinate + "  Current pollinate amount = " + pollinateAmount);
-
-                        if (pollinateAmount >= pollinateLimit) //when pollinate amount goes above chosen limit, a field matures
-                        {
-                            hasMatured = true;
-                            log.Info("The pollinate limit " + pollinateLimit + " was reached ");
-
-                        }
-
-                        }
-                            myListWind.Add(false);
-
-
-                        }
-                    }
-                }
-                
-            
-        }
-
-        /// <summary>
-        /// Reset all flower field values
-        /// </summary>
-        /// <returns>bool value if all values were reset successfully</returns>
         public bool Reset()
         {
             if (hasBlossomed && hasMatured)
@@ -186,10 +255,10 @@ namespace Server
                 isPlanting = true;
                 hasBlossomed = false;
                 hasMatured = false;
-                growthAmount = 0;
-                pollinateAmount = 0;
-                count = 0;
-                countWind = 0;
+                sumShine = 0;
+                amountBlows = 0;
+
+
                 return true;
             }
             else
@@ -207,4 +276,5 @@ namespace Server
         }
 
     }
+
 }

@@ -8,22 +8,25 @@ namespace Contract
 	public interface IService
 	{
         /// <summary>
-        /// Add sun shining value to sun shining amount
-        /// </summary>
-        void SunAdd();
+        
+        void SetSun(int index, bool value);
 
         /// <summary>
-        /// Remove sun shining value from sun 
-        /// </summary>
-        void SunCount();
+      
+       
+        int ResgisterSun();
 
         /// <summary>
-        /// Add wind blowing value to wind blowing amount
-        /// </summary>
-        void WindAdd();
+        
+
+        void SetWind(int index, bool value);
 
 
-        void CountWind();
+        /// <summary> 
+        int ResgisterWind(); 
+
+
+    
 
     }
 }

@@ -24,43 +24,49 @@ namespace Server
 		/// <summary>
 		/// Add sun shining value to sun shining amount
 		/// </summary>
-		public void SunAdd()
+		public void SetSun(int index, bool value)
 		{
 			lock( accessLock )
 			{
-				logic.SunAdd();
+				logic.SetSun(index,value);
 			}
 		}
 
-        /// <summary>
-        /// Remove sun shining value from sun 
-        /// </summary>
-        public void SunCount()
-        {
-            lock (accessLock)
-            {
-                logic.SunCount();
-            }
-        }
+    
+        public int ResgisterSun( ){
+            lock( accessLock )
+			{
 
-        public void CountWind(){
-            lock (accessLock)
-            {
-                logic.CountWind();
+            return logic.ResgisterSun();
             }
-        }
 
-        /// <summary>
-        /// Add wind blowing value to wind blowing amount
-        /// </summary>
-        public void WindAdd()
-        {
-            lock (accessLock)
-            {
-                logic.WindAdd();
+          }
+
+          	public void SetWind(int index,bool windValue)
+		{
+			lock( accessLock )
+			{
+				logic.SetWind(index,windValue);
+			}
+		}
+
+    
+        public int ResgisterWind(){
+            lock( accessLock )
+			{
+
+            return logic.ResgisterWind();
             }
-        }
 
+          }
+
+		   public int CheckSum(){
+            lock( accessLock )
+			{
+              return logic.CheckSum();
+            }
+
+          }
         /// <summary>
         /// Reset all flower field values
         /// </summary>
@@ -77,6 +83,10 @@ namespace Server
         {
             logic.FinishedPlanting();
         }
+
+		public int Usable(){
+			return logic.Usable();
+		}
 
     }
 }

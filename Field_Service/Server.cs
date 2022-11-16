@@ -17,6 +17,7 @@ public class Server
 	/// Logger for this class.
 	/// </summary>
 	Logger log = LogManager.GetCurrentClassLogger();
+	private static ServiceLogic logic = new ServiceLogic();
 
 	/// <summary>
 	/// Configure loggin subsystem.
@@ -44,6 +45,16 @@ public class Server
 	{
 		var self = new Server();
 		self.Run(args);
+			 while(true)
+			{
+				
+                if (Service.Reset())
+                {
+                      
+                    Thread.Sleep(5000);
+                    Service.FinishedPlanting();
+                }    
+			}
 	}
 
 	/// <summary>
@@ -83,23 +94,7 @@ public class Server
 
 		//indicate server is about to start
 		log.Info("Server is about to start");
-		 while(true)
-			{
-				
-                if (Service.Reset())
-                {
-                    log.Info("------------------------------------------------------------------");
-                    log.Info("The flower field is planting again...");                    
-                    Thread.Sleep(5000);
-                    Service.FinishedPlanting();
-                }    
-			}
 	
-
-		//start the server
-		
+	
 	}
-		
-
-	
 }
